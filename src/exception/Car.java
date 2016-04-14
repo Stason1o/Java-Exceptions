@@ -28,7 +28,7 @@ class Car {
                 maxSpeed = sc.nextFloat();
                 year = sc.nextInt();
                 while(sc.hasNext())
-                    crashes.add(new Crashes(sc.nextDouble(),sc.nextByte()));
+                    crashes.add(new Crashes(sc.nextDouble(), sc.nextByte(), sc.nextInt(), sc.nextInt(), sc.nextInt()));
                 nrCars++;
             }
             catch(IOException | NullPointerException | NumberFormatException | ArrayIndexOutOfBoundsException | InputMismatchException x){
@@ -45,34 +45,36 @@ class Car {
         do{
             flag = false;
             try{
-                do{
+                //do{
                     System.out.println("Enter name of car: ");
                     carName = inString();//ввод с кл.
                     if(carName.equals(""))
                         throw new CarExcp(carName);
-                }while(carName.equals(""));
+                //}while(carName.equals(""));
                 
                 int numOfCrashes;
                 do{
                     System.out.println("Enter number of crashes: ");
                     numOfCrashes = inInt();
-                }while(numOfCrashes < 0 || numOfCrashes > 10);
+                    if(numOfCrashes <= 0 || numOfCrashes > 10)
+                        System.out.println("numOfCrashes is not in range 0 - 10");
+                }while(numOfCrashes <= 0 || numOfCrashes > 10);
                 System.out.println("Enter repair prices for " + numOfCrashes + " crashes");
                 for (int i = 0; i < numOfCrashes; i++)//кол-во записей arrayList'a зависит от лок-го поля numOfCrashes
                     crashes.add(new Crashes());//добавление записей
-                do{
+                //do{
                     System.out.println("Enter car's year: ");
                     year = inInt();
-                    if(year < 1806 && year > 2017)//если условие не выполняется выкидывает ошибку
+                    if(year < 1806 || year > 2017)//если условие не выполняется выкидывает ошибку
                         throw new CarExcp(year);
                     //System.out.println("The year of car is wrong! Reenter year.");
-                }while((year < 1806) && (year > 2017));
-                do{ 
+                //}while((year < 1806) && (year > 2017));
+                //do{ 
                     System.out.println("Enter car's max speed: ");
                     maxSpeed = inFloat();
                     if(!(maxSpeed > 0 && maxSpeed < 1227.996))
                         throw new CarExcp(maxSpeed);
-                }while(maxSpeed < 0 && maxSpeed > 1227.996);
+                //}while(maxSpeed < 0 && maxSpeed > 1227.996);
             }
             catch(CarExcp error){
                 flag = true;
@@ -106,19 +108,19 @@ class Car {
                 for (int i = 0; i < newCrashes; i++)//кол-во записей arrayList'a зависит от лок-го поля numOfCrashes
                     crashes.add(new Crashes());//добавление записей
                 
-                do{
+                //do{
                     System.out.println("Enter car's year: ");
                     year = inInt();
                     if(year < 1806 && year > 2017)
                         throw new CarExcp(year);
                     //System.out.println("The year of car is wrong! Reenter year.");
-                }while((year < 1806) && (year > 2017));
-                do{ 
+                //}while((year < 1806) && (year > 2017));
+                //do{ 
                     System.out.println("Enter car's max speed: ");
                     maxSpeed = inFloat();
                     if(!(maxSpeed > 0 && maxSpeed < 1227.996))
                         throw new CarExcp(maxSpeed);
-                }while(maxSpeed < 0 && maxSpeed > 1227.996);
+                //}while(maxSpeed < 0 && maxSpeed > 1227.996);
             }
             catch(CarExcp error){
                 error.analyze();
@@ -130,32 +132,27 @@ class Car {
     
     //конструктор с 3-мя параметрами
     Car(String newName,int newYear,int newSpeed){
-        System.out.println("Enter quantity of crashes: ");
-        boolean flag = false;
-            do{
-                flag = false;
-                    carName = newName;
-                    int numOfCrashes;
-                    do{
-                        numOfCrashes = inInt();
-                    }while(numOfCrashes < 0 || numOfCrashes > 10);
 
-                        System.out.println("Enter repair prices for " + numOfCrashes + " crashes");
-                        for (int i = 0; i < numOfCrashes; i++)//кол-во записей arrayList'a зависит от лок-го поля numOfCrashes
-                            crashes.add(new Crashes());//добавление записей
-                        year = newYear;
-                        //System.out.println("The year of car is wrong! Reenter year.");
-                        maxSpeed = newSpeed;
-            } while(flag);
+        carName = newName;
+        System.out.println("Enter quantity of crashes: ");
+        int numOfCrashes;
+        do{
+            numOfCrashes = inInt();
+            if(numOfCrashes < 0 || numOfCrashes > 10)
+                System.out.println("Reenter number of crashes (0 - 10)");
+        }while(numOfCrashes < 0 || numOfCrashes > 10);
+
+            System.out.println("Enter repair prices for " + numOfCrashes + " crashes");
+            for (int i = 0; i < numOfCrashes; i++)//кол-во записей arrayList'a зависит от лок-го поля numOfCrashes
+                crashes.add(new Crashes());//добавление записей
+            year = newYear;
+            //System.out.println("The year of car is wrong! Reenter year.");
+            maxSpeed = newSpeed;
         nrCars++;
     }
 	
-    Car(String newName,int newYear,int newSpeed, double _price, byte _drunk) throws IOException{
-        System.out.println("Enter quantity of numOfCrashes: ");
-        int numOfCrashes = inInt();
-        System.out.println("Enter repair price for each crash: ");
-        for (int i = 0; i < numOfCrashes; i++)
-            crashes.add(new Crashes(_price, _drunk));
+    Car(String newName,int newYear,int newSpeed, double _price, byte _drunk, int _day, int _month, int _year) throws IOException{
+        crashes.add(new Crashes(_price, _drunk, _day, _month, _year));
         carName = newName;
         year = newYear;
         maxSpeed = newSpeed;
@@ -202,24 +199,7 @@ class Car {
         System.out.println("Characteristics were saved in " + filename + ".txt");
         pWrite.close();
     }
-      
-//    public void setCrashes(byte newCrashes) {
-//        try{
-//            if((newCrashes < 0) || (newCrashes < crashes))
-//                throw new CarExcp(newCrashes);
-//            int tmp[] = new int[crashes];
-//            for(int i = 0; i < crashes; i++)
-//                tmp[i] = crashPrice[i];
-//            int minCrashPrice = (crashes < newCrashes) ? crashes : newCrashes;
-//                crashPrice = new int[newCrashes];
-//            for (int i = 0; i < minCrashPrice; i++)
-//                crashPrice[i] = tmp[i];
-//            crashes = newCrashes;
-//        }
-//        catch(CarExcp error){
-//            error.analyze();
-//        }
-//    }
+
 // методы изменения полей класса
     public void setName(String newName) throws CarExcp{
         if(newName.equals(""))
@@ -336,7 +316,7 @@ class Car {
         ArrayList<Car> vector= new ArrayList<Car>();
      //   vector.add(new CarList());
 //        vector.add(Lambo);
-        vector.add(new Car("Audi R8",2014,300,1234,(byte)50));
+        vector.add(new Car("Audi R8", 2014, 300, 1234,(byte)50, 10, 01, 2000));
 //        vector.add(new CarList(5));
 //        vector.add(Audi);
 //        vector.add(Lada);
@@ -352,7 +332,7 @@ class Car {
 //          Lada.writeInFile(Lada.getName());
 //          Audi.writeInFile(Audi.getName());
         }catch(IOException x){
-            System.err.println("Can't write i file");
+            System.err.println("Can't write in file");
         }
 //        System.out.println("-------------Сравнение пар атомобилей-------------------");
 //        Ferrari.compareTwoCars(Audi);

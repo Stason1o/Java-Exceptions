@@ -12,14 +12,13 @@ public class CarExcp extends Exception{
     String  carNameC    = "Car";
     float   maxSpeedC   = 200.0f;
     Object  error       = null;
-//    class Date{
-//        int day;
-//        int month;
-//        int year;
-//    }
-//    Date date = new Date();
+    class Date{//структура даты аварий
+        int day   = 1;
+        int month = 1;
+        int year  = 2000;
+    }
+    Date date = new Date();
     double price = 1000;
-//    boolean death = false;
     byte drunk = (byte)60;
     
     CarExcp(double _price){// конструктор с параметром double
@@ -50,19 +49,38 @@ public class CarExcp extends Exception{
         error = x;
     }
     
+    CarExcp(int dOrMOrY, int oneOf){
+        switch (oneOf) {
+            case 1:
+                date.day = dOrMOrY;
+                break;
+            case 2:
+                date.month = dOrMOrY;
+                break;
+            case 3:
+                date.year = dOrMOrY;
+                break;
+            default:
+                break;
+        }
+    }
     void analyze(){//обработка exception'ов
         if(list ==  null)//если число аварий 
             System.err.println("NOT_INITIALIZED_LIST");
-        if(yearC < 1806)//
-            System.err.println("OUT_OF_RANGE_YEAR_EXCEPTION");
-        if(yearC > 2017)
+        if(yearC < 1900 || yearC > 2017)
             System.err.println("OUT_OF_RANGE_YEAR_EXCEPTION");
         if(maxSpeedC < 0)
-            System.err.println("OUT_OF_RANGE_SPEED_EXCEPTION");
+            System.err.println("NEGATIVE_SPEED_EXCEPTION");
         if(maxSpeedC > 1227.996)
-            System.err.println("OUT_OF_RANGE_SPEED_EXCEPTION");
+            System.err.println("MAXIMUM_SPEED_LIMIT_EXCEPTION");
         if(price < 0)
             System.err.println("NEGATIVE_PRICE_EXCEPTION");
+        if(date.day < 0 || date.day > 31)
+            System.err.println("OUT_OF_RANGE_DAY_EXCEPTION");
+        if(date.month < 0 || date.month > 12)
+            System.err.println("OUT_OF_RANGE_MONTH_EXCEPTION");
+        if(date.year < 1900 || date.year > 2017)
+            System.err.println("OUT_OF_RANGE_YEAR_EXCEPTION");
         if(drunk < 0)
             System.err.println("NEGATIVE_DRUNKNESS_EXCEPTION");
         if(drunk > 128)
@@ -81,3 +99,14 @@ public class CarExcp extends Exception{
             System.err.println("INPUT_MISMATCH_EXCEPTION");
     }
 }
+/*5430.0
+80
+15
+11
+2004
+3333.0
+65
+17
+09
+2007
+

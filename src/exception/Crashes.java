@@ -7,24 +7,28 @@ import java.io.InputStreamReader;
 
 public class Crashes {
     
-//    public class date{//структура даты.
-//        int day;
-//        int month;
-//        int crashYear;
-//        
-//        public void setDay(int _day){
-//            if(_day > 0 && _day < 32)
-//                crashDate.day = _day;
-//        }
-//        public void setMonth(int _month){
-//            crashDate.month = _month;
-//        }
-//        public void setYear(int _year){
-//            if(_year > 1980 && _year < 2017)
-//                crashDate.crashYear = _year;
-//        }
-//    }
-//    date crashDate  = new date();
+    public class date{//структура даты.
+        int day;
+        int month;
+        int crashYear;
+        
+        public void setDay(int _day) throws CarExcp{
+            if(_day < 0 || _day > 31)
+                throw new CarExcp(_day,1);
+            else day = _day;
+        }
+        public void setMonth(int _month) throws CarExcp{
+            if(month < 0 || month > 12)
+                throw new CarExcp(_month, 2);
+            else month = _month;
+        }
+        public void setYear(int _year) throws CarExcp{
+            if(_year < 1980 || _year > 2016)
+                throw new CarExcp(_year, 3);
+            else crashYear = _year;
+        }
+    }
+    date crashDate  = new date();
     double price;//цена ремонта
 //    boolean death;//есть ли смерть.
     byte drunk;//процент алкоголя в крови.
@@ -33,23 +37,30 @@ public class Crashes {
             do{
                 flag = false;
                 try{
-                    do{
-                        System.out.println("Enter price for crash: ");
-                        price = inInt();
-                        if(price < 0)
-                            throw new CarExcp(price);
-                    }while(price < 0 );
-    //                System.out.print("Was death?(true - yes, false - no) : ");
-    //                death = inBool();
-                    do{
-                        System.out.print("Enter value of drunkness (0 - 127): ");
-                        try{
-                            drunk = inByte();
-                        }catch(NumberFormatException x){
-                            throw new CarExcp(x);
-                        }
-                    }while(drunk < 0 || drunk > 128);
+                    System.out.println("Enter price for crash: ");
+                    price = inInt();
+                    if(price < 0)
+                        throw new CarExcp(price);
+
+                    System.out.println("Enter day of crash: ");
+                    crashDate.setDay(inInt());
+                    if(crashDate.day < 0 || crashDate.day > 31)
+                        throw new CarExcp(crashDate.day,1);
+
+                    System.out.print("Enter month of crash: ");
+                    crashDate.month = inInt();
+                    if(crashDate.month < 0 || crashDate.month > 12)
+                        throw new CarExcp(crashDate.month,2);
                     
+                    System.out.print("Enter year of crash: ");
+                    crashDate.crashYear = inInt();
+                    if(crashDate.crashYear < 1900 || crashDate.crashYear > 2017)
+                        throw new CarExcp(crashDate.crashYear,3);
+
+                    System.out.print("Enter value of drunkness (0 - 127): ");
+                    drunk = inByte();
+                    if(drunk < 0 || drunk > 128)
+                        throw new CarExcp(drunk);
                 }
                 catch(CarExcp x){
                     x.analyze();
@@ -58,14 +69,14 @@ public class Crashes {
             }while(flag);
     }
     //констркутор с параметрами для всех полей
-    Crashes(double _price, byte _drunk) throws IOException {
-        fill(_price,_drunk);
+    Crashes(double _price, byte _drunk, int _day, int _month, int _year) throws IOException {
+        fill(_price, _drunk, _day, _month, _year);
     }
     
-    private void fill(double _price, byte _drunk/*int _day, int _month, int _year, float _drunk,*/ ){
+    private void fill(double _price, byte _drunk, int _day, int _month, int _year ){
         try{
             setCrashPrice(_price);
-//            setCrashDate(_day, _month, _year);
+            setCrashDate(_day, _month, _year);
 //            setDeath(_death);
             setDrunk(_drunk);
         } catch(CarExcp x){
@@ -76,9 +87,9 @@ public class Crashes {
     public double getCrashPrice()   { return price; }
 //    public boolean getDeath()       { return death; }
     public float getDrunk()         { return drunk; }
-//    public int getDay()             { return crashDate.day;       }
-//    public int getMonth()           { return crashDate.month;     }
-//    public int getYear()            { return crashDate.crashYear; }
+    public int getDay()             { return crashDate.day;       }
+    public int getMonth()           { return crashDate.month;     }
+    public int getYear()            { return crashDate.crashYear; }
     
     public void setCrashPrice(double _price) throws CarExcp{
         if(_price < 0)
@@ -96,20 +107,27 @@ public class Crashes {
         else this.drunk = _drunk;
     }
     
-//    public void setCrashDate(int _day, int _month, int _year) throws CarExcp{
-//        crashDate.setDay(_day);
-//        crashDate.setMonth(_month);
-//        crashDate.setYear(_year);
-//    }
-    
+    public void setCrashDate(int _day, int _month, int _year) throws CarExcp{
+        if(_day < 0 || _day > 31)
+            throw new CarExcp(_day,1);
+        else crashDate.setDay(_day);
+        if(_month < 0 || _month > 12)
+            throw new CarExcp(_month,2);
+        else crashDate.setMonth(_month);
+        if(_year < 1900 || _year > 2017)    
+            throw new CarExcp(_year,3);
+        else crashDate.setYear(_year);   
+    }
+
     //вывод данных об аварии
     public void printInfo(){
         System.out.println("price: " + price);
 //        System.out.println("death: " + death);
         System.out.println("drunk: " + drunk);
-//        System.out.println("date:  " + crashDate.day + "/" + crashDate.month + "/" + crashDate.crashYear);
+        System.out.println("date:  " + crashDate.day + "/" + crashDate.month + "/" + crashDate.crashYear);
     }
-        static String inString() {
+    
+    public static String inString() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String str = "";
         try{
@@ -118,20 +136,107 @@ public class Crashes {
         return str;
     }
     
-    static int inInt(){
-        return (Integer.valueOf(inString()).intValue());
+    public static int inInt() {
+    	int result = 0;
+    	boolean flag;
+    	do {
+    		flag = false;
+	    	try {
+                    try {
+                        result = (Integer.valueOf(inString()).intValue());
+                    } catch (NumberFormatException e) {
+                        flag = true;
+                        throw new CarExcp(e);
+                    }
+	    	} catch (CarExcp e) {
+                    flag = true;
+                    e.analyze();
+	    	}
+    	} while (flag);
+        return result;
     }
     
-    static float inFloat(){
-        return (Float.valueOf(inString()).floatValue());
+    public static float inFloat() {
+    	float result = 0.0f;
+    	boolean flag;
+    	do {
+            flag = false;
+            try {
+                try {
+                    result = (Float.valueOf(inString()).floatValue());
+                } catch (NumberFormatException e) {
+                    flag = true;
+                    throw new CarExcp(e);
+                }
+            } catch (CarExcp e) {
+                flag = true;
+                e.analyze();
+            }
+    	} while (flag);
+        return result;
     }
-    static boolean inBool(){
-        return(Boolean.valueOf(inString()).booleanValue());
+    
+    public static short inShort() {
+    	short result = 0;
+    	boolean flag;
+    	do {
+            try {
+                try {
+                    result = (Short.valueOf(inString()).shortValue());
+                } catch (NumberFormatException e) {
+                    flag = true;
+                    throw new CarExcp(e);
+                }
+            } catch (CarExcp e) {
+                flag = true;
+                e.analyze();
+            }
+            flag = false;
+    	} while (flag);
+        return result;
     }
-    static byte inByte(){
-        return(Byte.valueOf(inString()).byteValue());
+    
+    public static double inDouble() {
+    	double result = 0.0;
+    	boolean flag;
+    	do {
+            flag = false;
+            try {
+                try {
+                    result = (Double.valueOf(inString()).doubleValue());
+                } catch (NumberFormatException e) {
+                    flag = true;
+                    throw new CarExcp(e);
+                }
+            } catch (CarExcp e) {
+                    flag = true;
+                    e.analyze();
+            }
+    	} while (flag);
+        return result;
     }
-    static double inDouble(){
-        return(Double.valueOf(inString()).doubleValue());
+
+    public static byte inByte() {
+    	byte result = (byte)0;
+    	boolean flag;
+    	do {
+            flag = false;
+            try {
+                try {
+                    result = (Byte.valueOf(inString()).byteValue());
+                } catch (NumberFormatException e) {
+                    flag = true;
+                    throw new CarExcp(e);
+                }
+            } catch (CarExcp e) {
+                flag = true;
+                e.analyze();
+            }
+    	} while (flag);
+        return result;
     }
+
+//    static boolean inBool(){
+//        return(Boolean.valueOf(inString()).booleanValue());
+//    }
 }
